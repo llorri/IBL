@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model IntakeSubmission {
+  id               Int      @id @default(autoincrement())
+  clientName       String
+  dateOfBirth      String?
+  diagnosis        String?
+  serviceInterest  String
+  guardianName     String
+  guardianEmail    String
+  guardianPhone    String?
+  preferredContact String
+  details          String?
+  createdAt        DateTime @default(now())
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  topic     String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model BlogPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  publishedAt DateTime @default(now())
+  featured    Boolean  @default(false)
+}
+
+model StaffUser {
+  id           Int             @id @default(autoincrement())
+  name         String
+  email        String          @unique
+  passwordHash String
+  role         String          @default("staff")
+  schedules    StaffSchedule[]
+  notes        CaseNote[]
+  createdAt    DateTime        @default(now())
+}
+
+model StaffSchedule {
+  id           Int       @id @default(autoincrement())
+  staff        StaffUser @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  staffId      Int
+  clientName   String
+  serviceFocus String
+  meetingDate  DateTime
+  location     String
+  notes        String?
+  createdAt    DateTime @default(now())
+}
+
+model CaseNote {
+  id        Int       @id @default(autoincrement())
+  staff     StaffUser @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  staffId   Int
+  clientName String
+  summary   String
+  followUp  String?
+  createdAt DateTime @default(now())
+}
