@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ClientIntake {
+  id                 Int      @id @default(autoincrement())
+  createdAt          DateTime @default(now())
+  firstName          String
+  lastName           String
+  age                Int?
+  guardianName       String?
+  phone              String
+  email              String
+  preferredContact   String?
+  county             String?
+  fundingSource      String?
+  servicesRequested  String
+  communicationNeeds String?
+  safetyConcerns     String?
+  goals              String?
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  name      String
+  email     String
+  subject   String
+  message   String
+}
+
+model Resource {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  category    String
+  audience    String
+  filePath    String
+  type        String
+  updatedAt   DateTime @updatedAt
+}
+
+model StaffUser {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  role          String
+  passwordHash  String
+  createdAt     DateTime       @default(now())
+  scheduleItems ScheduleItem[]
+  caseNotes     CaseNote[]
+}
+
+model ScheduleItem {
+  id          Int       @id @default(autoincrement())
+  sessionDate DateTime
+  serviceArea String
+  clientName  String
+  location    String
+  notes       String?
+  createdAt   DateTime  @default(now())
+  staff       StaffUser @relation(fields: [staffId], references: [id])
+  staffId     Int
+}
+
+model CaseNote {
+  id         Int       @id @default(autoincrement())
+  clientName String
+  focusArea  String
+  summary    String
+  followUp   String?
+  createdAt  DateTime  @default(now())
+  staff      StaffUser @relation(fields: [staffId], references: [id])
+  staffId    Int
+}
+
+model BlogPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  author      String
+  tags        String?
+  publishedAt DateTime @default(now())
+  coverImage  String?
+  featured    Boolean  @default(false)
+}
